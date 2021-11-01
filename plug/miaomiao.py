@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+from json import dumps
+import os
 import copy
 from time import (
     sleep,
@@ -12,7 +14,6 @@ from hashlib import md5
 import urllib3
 import requests as rs
 import settings
-
 
 
 class MiaoMiao:
@@ -139,10 +140,15 @@ class MiaoMiao:
 
 
     def iter(self):
-        for d in self._get_vaccine_list():
-            if d:
-                if d.get('stock'):
-                    yield self._build_skill_request(d)
+        while True:
+            for d in self._get_vaccine_list():
+                if d:
+                    if d.get('stock') and d.get("vaccineCode") == "8803":
+                        yield self._build_skill_request(d)
+                    else:
+                        os.system(f'echo "{dumps(d)}" >> ./vaccine_list.log')
+            print('sleep: 60s')
+            sleep(60)
         
     
 

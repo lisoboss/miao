@@ -2,14 +2,13 @@
 # -*- coding: utf-8 -*-
 
 
-user_name = '鲜鲛'
+user_name = ''
 
-miaomiao_tk = 'wxapptoken:10:f43b64a443fb72c005dc0d2295a1faf4_023a524f497ba586f766c2a0122918e6'
-miaomiao_cookie = ''
+miaomiao_tk = ''
+# miaomiao_cookie = ''
 
 region_codes = [
     5101,  # 成都
-    5402, 
 ]
 
 
