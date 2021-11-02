@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from json import dumps
 import os
 import copy
 from time import (
@@ -42,10 +41,12 @@ class MiaoMiao:
     ECC_HS_SALT = 'ux$ad70*b'
 
     def __init__(self):
+        self.running = True
         self._user_name = settings.user_name
         self._tk = settings.miaomiao_tk
         self._cookie = settings.miaomiao_cookie
         self._region_codes = settings.region_codes
+        self.f = open('./miao.log', 'a+', encoding='utf-8')
         # 
         urllib3.disable_warnings()
         # init user info
@@ -140,13 +141,13 @@ class MiaoMiao:
 
 
     def iter(self):
-        while True:
+        while self.running:
             for d in self._get_vaccine_list():
                 if d:
                     if d.get('stock') and d.get("vaccineCode") == "8803":
                         yield self._build_skill_request(d)
                     else:
-                        os.system(f'echo "{dumps(d)}" >> ./vaccine_list.log')
+                        print(d, file=self.f) 
             print('sleep: 60s')
             sleep(60)
         

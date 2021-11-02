@@ -13,17 +13,17 @@ class Engine:
         self.pool = []
 
     def stop(self):
+        self.m.running = False
         for p in self.pool:
             p.running = False
     
-    def kill(self, data):
+    def _miao_kill(self, data):
         p = Pool(data)
         self.pool.append(p)
         p.run()
 
     def run(self):
         for d in self.m.iter():
-            input(d)
-            self.kill(d)
+            self._miao_kill(d)
             
             

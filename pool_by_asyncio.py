@@ -3,6 +3,7 @@
 
 import asyncio
 from logging import getLogger
+from time import time
 from aiohttp import (
     ClientSession,
     TCPConnector,
@@ -18,12 +19,18 @@ class Pool:
         self.rq = rq
         self.max_workers = max_workers
         self.running = True
+        self.f = open('./pool.log', 'a+', encoding='utf-8')
 
     async def async_sub_worker(self):
         target = self.rq.get('ret') or {}
-        async with ClientSession(connector=TCPConnector(ssl=False)) as se:
-            while self.running:
-                try:
+        while self.running:
+            sleep_time = (target.get('start_time') or 0) - time()
+            if sleep_time < -10:
+                break
+            if sleep_time > 3:
+                await asyncio.sleep(sleep_time)
+            try:
+                async with ClientSession(connector=TCPConnector(ssl=False)) as se:
                     async with se.request(
                         method=self.rq.get('method', ''),
                         url=self.rq.get('url', ''),
@@ -41,14 +48,16 @@ class Pool:
                         except:
                             _data = await rp.text()
                             data = {'err': _data}
-                        if data.get(target.get('json_key')) == target.get('json_value'):
+                        if data.get(target.get('json_key') or '') == target.get('json_value'):
                             self.running = False
                             print('ok ok ok ok ok ok ok ok ok')
+                            print('ok ok ok ok ok ok ok ok ok', file=self.f)
                         else:
                             print(status, data)
-                except Exception as e:
-                    print(111111111111111)
-                    print(e)
+                            print(status, data, file=self.f)
+            except Exception as e:
+                print(e)
+                print(e, file=self.f)
 
     async def async_worker(self):
         await asyncio.gather(
