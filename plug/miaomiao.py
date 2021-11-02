@@ -149,6 +149,8 @@ class MiaoMiao:
                     else:
                         print(d, file=self.f) 
             print('sleep: 60s')
+            if not self.running:
+                break
             sleep(60)
         
     
