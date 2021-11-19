@@ -148,10 +148,11 @@ class MiaoMiao:
                         yield self._build_skill_request(d)
                     else:
                         print(d, file=self.f) 
-            print('sleep: 60s')
+            s = 60
+            print('sleep: %ss' % s)
             if not self.running:
                 break
-            sleep(60)
+            sleep(s)
         
     
 

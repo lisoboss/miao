@@ -24,10 +24,10 @@ class Pool:
     async def async_sub_worker(self):
         target = self.rq.get('ret') or {}
         while self.running:
-            sleep_time = (target.get('start_time') or 0) - time()
+            sleep_time = (self.rq.get('start_time') or 0) - time() * 1000
             if sleep_time < -10:
                 break
-            if sleep_time > 3:
+            if sleep_time > 1000:
                 await asyncio.sleep(sleep_time)
             try:
                 async with ClientSession(connector=TCPConnector(ssl=False)) as se:
