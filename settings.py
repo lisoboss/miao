@@ -5,7 +5,7 @@
 user_name = ''
 
 miaomiao_tk = ''
-miaomiao_cookie = ''
+miaomiao_cookie = '_xzkj_=' + miaomiao_tk
 
 region_codes = [
     5101,  # 成都

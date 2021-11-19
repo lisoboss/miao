@@ -23,12 +23,14 @@ class Pool:
 
     async def async_sub_worker(self):
         target = self.rq.get('ret') or {}
+        target_time = (self.rq.get('start_time') or 0)
         while self.running:
-            sleep_time = (self.rq.get('start_time') or 0) - time() * 1000
-            if sleep_time < -10:
+            start_time = target_time - int(time() * 1000)
+            if start_time < -10:
                 break
-            if sleep_time > 1000:
-                await asyncio.sleep(sleep_time)
+            if start_time > 1000:
+                await asyncio.sleep(0.3)
+                continue
             try:
                 async with ClientSession(connector=TCPConnector(ssl=False)) as se:
                     async with se.request(
@@ -43,18 +45,17 @@ class Pool:
                         proxy='',
                     ) as rp:
                         status = rp.status
-                        try:
+                        if status == 200:
                             data = await rp.json()
-                        except:
-                            _data = await rp.text()
-                            data = {'err': _data}
-                        if data.get(target.get('json_key') or '') == target.get('json_value'):
-                            self.running = False
-                            print('ok ok ok ok ok ok ok ok ok')
-                            print('ok ok ok ok ok ok ok ok ok', file=self.f)
+                            if data.get(target.get('json_key') or '') == target.get('json_value'):
+                                self.running = False
+                                print('ok ok ok ok ok ok ok ok ok')
+                                print('ok ok ok ok ok ok ok ok ok', file=self.f)
+                            else:
+                                print(start_time, status, data, file=self.f)
                         else:
-                            print(status, data)
-                            print(status, data, file=self.f)
+                            text = await rp.text()
+                            print(start_time, status, text, file=self.f)
             except Exception as e:
                 print(e)
                 print(e, file=self.f)
